@@ -12,10 +12,8 @@
 
   <ItemGroup>
     <Folder Include="Common\Exceptions\" />
-    <Folder Include="Features\Patients\Commands\DeletePatient\" />
     <Folder Include="Features\Patients\Mappings\" />
     <Folder Include="Features\Patients\Validators\" />
-    <Folder Include="Features\Patients\Queries\" />
   </ItemGroup>
 
   <ItemGroup>

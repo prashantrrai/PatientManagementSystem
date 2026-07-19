@@ -20,6 +20,8 @@ namespace PatientManagement.Infrastructure.DependencyInjection
             // Register Repository
             services.AddScoped<IPatientRepository, PatientRepository>();
 
+            services.AddMemoryCache();
+
             return services;
         }
     }
