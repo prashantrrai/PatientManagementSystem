@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PatientManagement.Domain\PatientManagement.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Common\Interfaces\" />
+    <Folder Include="Common\Models\" />
+    <Folder Include="Common\Exceptions\" />
+    <Folder Include="DependencyInjection\" />
+    <Folder Include="Features\Patients\Commands\" />
+    <Folder Include="Features\Patients\DTOs\" />
+    <Folder Include="Features\Patients\Mappings\" />
+    <Folder Include="Features\Patients\Validators\" />
+    <Folder Include="Features\Patients\Queries\" />
+  </ItemGroup>
+
+</Project>

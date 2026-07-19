@@ -1,3 +1,6 @@
 <Solution>
-  <Project Path="PatientManagement/PatientManagement.csproj" />
+  <Project Path="PatientManagement.Application/PatientManagement.Application.csproj" Id="96b4352a-d68f-453c-bf20-a0843ac3440a" />
+  <Project Path="PatientManagement.Domain/PatientManagement.Domain.csproj" Id="e338fa97-ae8f-4642-a7d8-ceaddc2d391c" />
+  <Project Path="PatientManagement.Infrastructure/PatientManagement.Infrastructure.csproj" Id="bf2e7d32-8c12-4d3f-991b-3e3fdb03f0bd" />
+  <Project Path="PatientManagement.API/PatientManagement.API.csproj" />
 </Solution>
