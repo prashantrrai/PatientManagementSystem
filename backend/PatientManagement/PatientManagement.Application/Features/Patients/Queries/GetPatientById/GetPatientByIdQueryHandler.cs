@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using PatientManagement.Application.Common.Interfaces;
-using PatientManagement.Domain.Entities;
+using PatientManagement.Application.Features.Patients.DTOs;
 
 namespace PatientManagement.Application.Features.Patients.Queries.GetPatientById
 {
-    public class GetPatientByIdQueryHandler : IRequestHandler<GetPatientByIdQuery, Patient?>
+    public class GetPatientByIdQueryHandler : IRequestHandler<GetPatientByIdQuery, PatientDto?>
     {
         private readonly IPatientRepository _repository;
 
@@ -13,7 +13,7 @@ namespace PatientManagement.Application.Features.Patients.Queries.GetPatientById
             _repository = repository;
         }
 
-        public async Task<Patient?> Handle(GetPatientByIdQuery request, CancellationToken cancellationToken)
+        public async Task<PatientDto?> Handle(GetPatientByIdQuery request, CancellationToken cancellationToken)
         {
             return await _repository.GetByIdAsync(request.PatientId, cancellationToken);
         }

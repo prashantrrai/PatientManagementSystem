@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Microsoft.Data.SqlClient;
+using Serilog;
 using System.Net;
 using System.Text.Json;
 
@@ -26,12 +27,28 @@ namespace PatientManagement.API.Middleware
                 Log.Error(ex, "Unhandled exception occurred.");
 
                 context.Response.ContentType = "application/json";
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+                int statusCode = (int)HttpStatusCode.InternalServerError;
+                string message = ex.Message;
+
+                if (ex is SqlException sqlException)
+                {
+                    statusCode = (int)HttpStatusCode.BadRequest;
+
+                    message = sqlException.Number switch
+                    {
+                        2627 => "Duplicate record. Email or Mobile Number already exists.",
+                        2601 => "Duplicate record. Email or Mobile Number already exists.",
+                        _ => sqlException.Message
+                    };
+                }
+
+                context.Response.StatusCode = statusCode;
 
                 var response = new
                 {
                     Success = false,
-                    Message = "An unexpected error occurred."
+                    Message = message
                 };
 
                 await context.Response.WriteAsync(JsonSerializer.Serialize(response));

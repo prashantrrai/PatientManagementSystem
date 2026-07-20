@@ -1,4 +1,6 @@
-﻿using PatientManagement.Domain.Entities;
+﻿using PatientManagement.Application.Common.Models;
+using PatientManagement.Application.Features.Patients.DTOs;
+using PatientManagement.Domain.Entities;
 
 namespace PatientManagement.Application.Common.Interfaces
 {
@@ -6,9 +8,13 @@ namespace PatientManagement.Application.Common.Interfaces
     {
         Task<int> UpsertAsync(Patient patient, CancellationToken cancellationToken);
 
-        Task<IEnumerable<Patient>> GetAllAsync(string? search, int pageNumber, int pageSize, CancellationToken cancellationToken);
+        Task<PagedResponse<PatientDto>> GetAllAsync(
+            string? search,
+            int pageNumber,
+            int pageSize,
+            CancellationToken cancellationToken);
 
-        Task<Patient?> GetByIdAsync(int patientId, CancellationToken cancellationToken);
+        Task<PatientDto?> GetByIdAsync(int patientId, CancellationToken cancellationToken);
 
         Task<bool> DeleteAsync(int patientId, CancellationToken cancellationToken);
     }

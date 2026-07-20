@@ -1,6 +1,8 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Caching.Memory;
 using PatientManagement.Application.Common.Interfaces;
+using PatientManagement.Application.Common.Models;
+using PatientManagement.Application.Features.Patients.DTOs;
 using PatientManagement.Domain.Entities;
 using PatientManagement.Infrastructure.Persistence.ConnectionFactory;
 
@@ -89,16 +91,26 @@ namespace PatientManagement.Infrastructure.Persistence.Repositories
             return patientId;
         }
 
-        public async Task<IEnumerable<Patient>> GetAllAsync(string? search, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task<PagedResponse<PatientDto>> GetAllAsync(string? search, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             string cacheKey = $"{PatientsCacheKey}_{search}_{pageNumber}_{pageSize}";
 
-            if (_memoryCache.TryGetValue(cacheKey, out IEnumerable<Patient>? cachedPatients))
+            if (_memoryCache.TryGetValue(cacheKey, out PagedResponse<PatientDto>? cachedResponse))
             {
-                return cachedPatients!;
+                return cachedResponse!;
             }
 
             const string sql = @"
+            SELECT COUNT(*)
+            FROM dbo.Patients
+            WHERE
+                (
+                    @Search IS NULL
+                    OR FirstName LIKE '%' + @Search + '%'
+                    OR LastName LIKE '%' + @Search + '%'
+                    OR MobileNumber LIKE '%' + @Search + '%'
+                );
+
             SELECT
                 PatientId,
                 FirstName,
@@ -114,8 +126,6 @@ namespace PatientManagement.Infrastructure.Persistence.Repositories
                 IsActive
             FROM dbo.Patients
             WHERE
-                IsActive = 1
-                AND
                 (
                     @Search IS NULL
                     OR FirstName LIKE '%' + @Search + '%'
@@ -123,29 +133,41 @@ namespace PatientManagement.Infrastructure.Persistence.Repositories
                     OR MobileNumber LIKE '%' + @Search + '%'
                 )
             ORDER BY PatientId DESC
-            OFFSET (@Offset) ROWS
+            OFFSET @Offset ROWS
             FETCH NEXT @PageSize ROWS ONLY;";
 
             using var connection = _connectionFactory.CreateConnection();
 
-            var patients = (await connection.QueryAsync<Patient>(
+            using var multi = await connection.QueryMultipleAsync(
                 sql,
                 new
                 {
                     Search = string.IsNullOrWhiteSpace(search) ? null : search,
                     Offset = (pageNumber - 1) * pageSize,
                     PageSize = pageSize
-                })).ToList();
+                });
+
+            int totalCount = await multi.ReadSingleAsync<int>();
+
+            var patients = (await multi.ReadAsync<PatientDto>()).ToList();
+
+            var response = new PagedResponse<PatientDto>
+            {
+                Items = patients,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = totalCount
+            };
 
             _memoryCache.Set(
                 cacheKey,
-                patients,
+                response,
                 TimeSpan.FromMinutes(5));
 
-            return patients;
+            return response;
         }
 
-        public async Task<Patient?> GetByIdAsync(int patientId, CancellationToken cancellationToken)
+        public async Task<PatientDto?> GetByIdAsync(int patientId, CancellationToken cancellationToken)
         {
             const string sql = @"
             SELECT
@@ -162,12 +184,11 @@ namespace PatientManagement.Infrastructure.Persistence.Repositories
                 ModifiedDate,
                 IsActive
             FROM dbo.Patients
-            WHERE PatientId = @PatientId
-            AND IsActive = 1;";
+            WHERE PatientId = @PatientId;";
 
             using var connection = _connectionFactory.CreateConnection();
 
-            return await connection.QueryFirstOrDefaultAsync<Patient>(
+            return await connection.QueryFirstOrDefaultAsync<PatientDto>(
                 sql,
                 new { PatientId = patientId });
         }

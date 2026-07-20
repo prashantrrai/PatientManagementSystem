@@ -1,9 +1,10 @@
 ﻿using MediatR;
-using PatientManagement.Domain.Entities;
+using PatientManagement.Application.Common.Models;
+using PatientManagement.Application.Features.Patients.DTOs;
 
 namespace PatientManagement.Application.Features.Patients.Queries.GetPatients
 {
-    public class GetPatientsQuery : IRequest<IEnumerable<Patient>>
+    public class GetPatientsQuery : IRequest<PagedResponse<PatientDto>>
     {
         public string? Search { get; set; }
 
