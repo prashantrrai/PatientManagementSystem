@@ -1,0 +1,68 @@
+<mat-card class="details-card" *ngIf="patient">
+
+    <h2>Patient Details</h2>
+
+    <div class="details-grid">
+
+        <div>
+            <label>First Name</label>
+            <p>{{patient.firstName}}</p>
+        </div>
+
+        <div>
+            <label>Last Name</label>
+            <p>{{patient.lastName}}</p>
+        </div>
+
+        <div>
+            <label>Gender</label>
+            <p>{{getGender(patient.gender)}}</p>
+        </div>
+
+        <div>
+            <label>Date of Birth</label>
+            <p>{{patient.dateOfBirth | date:'dd-MMM-yyyy'}}</p>
+        </div>
+
+        <div>
+            <label>Mobile Number</label>
+            <p>{{patient.mobileNumber}}</p>
+        </div>
+
+        <div>
+            <label>Email</label>
+            <p>{{patient.email}}</p>
+        </div>
+
+        <div>
+            <label>Blood Group</label>
+            <p>{{patient.bloodGroup}}</p>
+        </div>
+
+        <div>
+            <label>Status</label>
+            <p>{{patient.isActive ? 'Active' : 'Inactive'}}</p>
+        </div>
+
+    </div>
+
+    <div class="full-width">
+
+        <label>Address</label>
+
+        <p>{{patient.address}}</p>
+
+    </div>
+
+    <div class="actions">
+        <button mat-raised-button color="primary" (click)="back()">
+            Back
+        </button>
+    </div>
+
+</mat-card>
+
+<div class="loading" *ngIf="loading">
+    <mat-spinner diameter="45"></mat-spinner>
+    <p>Loading Patient...</p>
+</div>
